@@ -45,14 +45,18 @@ def startSearch(datasource):
         v = input()
         if v == "q":
             leave()
-
         if k not in searchkeys:
             print ("please type in a valid key and press enter to begin, type quit to exit")
             response == False
         else:
             response == True
             v = normalizeString(v)
-            search.search(k, v, datasource)
+            if datasource  == "organizations":
+               search.orgSearch(k, v, datasource)
+            if datasource  == "users":
+               search.userSearch(k, v, datasource)              
+            if datasource  == "tickets":
+               search.ticketSearch(k, v, datasource)             
             welcome()
 
 ### This isn't great but the python input parses user input as a string, breaking the comparison later
@@ -62,11 +66,9 @@ def normalizeString(v):
     try:
         value = int(v)
     except ValueError:
-        return v
-    try:
+        value = v
+    if v.casefold() ==  "true" or v.casefold() == "false":
         value = bool(v)
-    except ValueError:
-        return v
     return value
 
 ### It's important to be polite  
@@ -77,20 +79,3 @@ def leave():
 if __name__ == "__main__":
     search.main()
     welcome()
-
-
-    
-    
-
-
-# import json
-
-# def search():
-
-#     with open('./data/organizations.json') as json_file:
-#         data = json.load(json_file)
-#         for o in data:
-#             print(o)
-
-# if __name__ == "__main__":
-#     print(search())

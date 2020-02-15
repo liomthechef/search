@@ -1,5 +1,9 @@
 import json
 
+from dataclasses import dataclass
+
+
+
 def initializeData(dbsource):
     with open(f"./inputdata/{dbsource}.json") as json_file:
       data = json.load(json_file)
@@ -13,20 +17,73 @@ def searchableFields(inputmap):
     return set(keys)
 
 
-def search(key, value, datasource):
+def orgSearch(key, value, datasource):
     
-    searchorder = ["tickets", "organizations", "users"]
-    ## searching inputted order first
-    searchorder.insert(0,searchorder.pop(searchorder.index(datasource))) 
-
     results = ""
     print("searching....")
+    for element in organizations:
+        for iter_key, iter_value  in element.items():
+            if iter_key == key and iter_value == value:
+                results += json.dumps(element, indent=2)
 
-    for datasource in searchorder:
-        for element in globals()[datasource]:
+    if key == "_id":
+        for element in users:
             for iter_key, iter_value  in element.items():
+                if iter_key == "organization_id" and iter_value == value:
+                    results += json.dumps(element, indent=2)
+
+    if key == "_id":
+        for element in tickets:
+            for iter_key, iter_value  in element.items():
+                if iter_key == "organization_id" and iter_value == value:
+                    results += json.dumps(element, indent=2)
+
+    print(results)
+
+def userSearch(key, value, datasource):
+    
+    results = ""
+    print("searching....")
+    for element in users:
+        for iter_key, iter_value in element.items():
+            if iter_key == key and iter_value == value:
+                results += json.dumps(element, indent=2)
+
+    if key == "_id":
+        for element in tickets:
+            for iter_key, iter_value in element.items():
+                if iter_key == "submitter_id" and iter_value == value or iter_key == "assignee_id" and iter_value == value:
+                    results += json.dumps(element, indent=2)
+
+    if key == "organization_id":
+        for element in organizations:
+            for iter_key, iter_value in element.items():
                 if iter_key == key and iter_value == value:
                     results += json.dumps(element, indent=2)
+
+    print(results)
+
+def ticketSearch(key, value, datasource):
+    
+    results = ""
+    print("searching....")
+    print (key, value, datasource)
+    for element in tickets:
+        for iter_key, iter_value in element.items():
+            if iter_key == key and iter_value == value:
+                results += json.dumps(element, indent=2)
+
+    if key == "submitter_id" or key == "assignee_id":
+        for element in users:
+            for iter_key, iter_value  in element.items():
+                if iter_key == "_id" and iter_value == value:
+                    results += json.dumps(element, indent=2)
+
+    if key == "organization_id":
+        for element in organizations:
+            for iter_key, iter_value  in element.items():
+                if iter_key == "_id" and iter_value == value:
+                   results += json.dumps(element, indent=2)
     print(results)
 
 def main():
