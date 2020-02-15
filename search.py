@@ -14,14 +14,20 @@ def searchableFields(inputmap):
 
 
 def search(key, value, datasource):
-    print (key, value)
-    if datasource == "organizations":
-        for element in organizations:
-           for iter_key, iter_value  in element.items():
-              if iter_value == int(value):
-                 print(element)
+    
+    searchorder = ["tickets", "organizations", "users"]
+    ## searching inputted order first
+    searchorder.insert(0,searchorder.pop(searchorder.index(datasource))) 
 
+    results = ""
     print("searching....")
+
+    for datasource in searchorder:
+        for element in globals()[datasource]:
+            for iter_key, iter_value  in element.items():
+                if iter_key == key and iter_value == value:
+                    results += json.dumps(element, indent=2)
+    print(results)
 
 def main():
     global organizations
@@ -34,7 +40,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
 
-    # print(searchableFields(organizations))
 

@@ -1,5 +1,6 @@
 import search
 import pprint
+import json
 
 def welcome():
     print("""Welcome to the Zendesk search application type the menu number and press enter to proceed
@@ -34,7 +35,7 @@ def startSearch(datasource):
     response = False
     while response == False:
         print (f"\nSearchable fields in {datasource}")
-        print (searchkeys)
+        print (json.dumps(list(searchkeys), indent=2, sort_keys=True))
         print ("\n")
         print ("please type in a valid search key and press enter to begin, or type q to exit")
         k = input()
@@ -50,10 +51,25 @@ def startSearch(datasource):
             response == False
         else:
             response == True
+            v = normalizeString(v)
             search.search(k, v, datasource)
             welcome()
-        
-    
+
+### This isn't great but the python input parses user input as a string, breaking the comparison later
+### The alternative being to transform all the input data to strings as loaded, which is very slow.
+### There's no doubt a better way to do this but I like my weekend :)
+def normalizeString(v):
+    try:
+        value = int(v)
+    except ValueError:
+        return v
+    try:
+        value = bool(v)
+    except ValueError:
+        return v
+    return value
+
+### It's important to be polite  
 def leave():
     print("Goodbye, come back soon")
     exit()
