@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 
 def initializeData(dbsource):
-    with open(f"./inputdata/{dbsource}.json") as json_file:
+    with open(dbsource) as json_file:
       data = json.load(json_file)
     return data
 
@@ -67,7 +67,6 @@ def ticketSearch(key, value, datasource):
     
     results = ""
     print("searching....")
-    print (key, value, datasource)
     for element in tickets:
         for iter_key, iter_value in element.items():
             if iter_key == key and iter_value == value:
@@ -91,9 +90,9 @@ def main():
     global tickets
     global users
 
-    organizations=initializeData("organizations")
-    tickets=initializeData("tickets")
-    users=initializeData("users")
+    organizations=initializeData("./inputdata/organizations.json")
+    tickets=initializeData("./inputdata/tickets.json")
+    users=initializeData("./inputdata/users.json")
 
 if __name__ == "__main__":
     main()

@@ -6,4 +6,4 @@ pip3 install -r requirements.txt
 cd "$(dirname "$0")"
 export PYTHONPATH=$PYTHONPATH:pwd
 
-python3 user.py
+python3 users.py
