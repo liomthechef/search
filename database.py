@@ -4,7 +4,7 @@ from sqlite3 import Error
  
  
 def create_connection():
-    conn = None;
+    conn = None
     try:
         conn = sqlite3.connect(':memory:')
         print(sqlite3.version)
@@ -109,31 +109,55 @@ def initialize_tickets(conn):
     with open("./inputdata/tickets.json") as json_file:
       data = json.load(json_file)
 
-    sql = '''INSERT INTO tickets(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'''
-                                
+    
     for element in data:
         keylist = []
         valuelist = []
+        valuelength = []
         for iter_key, iter_value in element.items():
             keylist.append(str(iter_key))
             valuelist.append(str(iter_value))
+            valuelength += "?"
+        print (valuelength)
+
+        sql = f'''INSERT INTO tickets({(",".join(map(str, keylist)))}) VALUES({(",".join(map(str, valuelength)))})'''
+        print (sql)
         with conn:
+            conn.set_trace_callback(print)
             cur = conn.cursor()
             cur.execute(sql, valuelist)
 
     cur.execute("SELECT * FROM tickets;")
     print(cur.fetchall())
 
-# def initialize_organizations():
-#     with open(dbsource) as json_file:
-#       data = json.load(json_file)
-#     return data
+def initialize_table(conn, table):
+    with open(f"./inputdata/{table}.json") as json_file:
+      data = json.load(json_file)
+
+
+    for element in data:
+        keylist = []
+        valuelist = []
+        valuelength = []
+        for iter_key, iter_value in element.items():
+            keylist.append(str(iter_key))
+            valuelist.append(str(iter_value))
+            valuelength += "?"
+
+        sql = f'''INSERT INTO {table}({(",".join(map(str, keylist)))}) VALUES({(",".join(map(str, valuelength)))})'''
+        print (sql)
+        with conn:
+            conn.set_trace_callback(print)
+            cur = conn.cursor()
+            cur.execute(sql, valuelist)
 
 def main():
     conn = create_connection()
     conn.set_trace_callback(print)
     configure_tables(conn)
-    initialize_organizations(conn)
-    initialize_tickets(conn)
+    initialize_table(conn, "organizations")
+    initialize_table(conn, "tickets")
+    initialize_table(conn, "users")
+
 if __name__ == '__main__':
     main()
