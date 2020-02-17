@@ -6,5 +6,5 @@ pip install -r requirements.txt
 cd "$(dirname "$0")"
 export PYTHONPATH=$PYTHONPATH:pwd
 
-flake8 --exclude=venv* --statistics
+flake8 --exclude=venv* --statistics --ignore=E501
 pytest -v
