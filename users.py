@@ -49,7 +49,7 @@ def startSearch(datasource):
             response == True
             v = normalizeString(v)
             # queries.search_columns(k, v, datasource)
-            queries.search_id(k, v, datasource)
+            queries.search_id_user(k, v, datasource)
             welcome()
 
 ### This isn't great but the python input parses user input as a string, breaking the comparison later
