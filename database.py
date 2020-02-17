@@ -34,9 +34,9 @@ def configure_tables(conn):
                                     name text,
                                     alias text,
                                     created_at text,
-                                    active integer,
-                                    verified integer,
-                                    shared integer,
+                                    active text,
+                                    verified text,
+                                    shared text,
                                     locale text,
                                     timezone text,
                                     last_login_at text,
@@ -45,7 +45,7 @@ def configure_tables(conn):
                                     signature text,
                                     organization_id integer,
                                     tags text,
-                                    suspended integer,
+                                    suspended text,
                                     role text,
                                     FOREIGN KEY (organization_id) REFERENCES organizations (_id)
                                     ); """
@@ -64,7 +64,7 @@ def configure_tables(conn):
                                     assignee_id integer,
                                     organization_id integer,
                                     tags text,
-                                    has_incidents integer,
+                                    has_incidents text,
                                     due_at text,
                                     via text,
                                     FOREIGN KEY (assignee_id) REFERENCES users (_id)
@@ -79,7 +79,7 @@ def configure_tables(conn):
                                     name text NOT NULL,
                                     domain_names text NOT NULL,
                                     created_at text NOT NULL,
-                                    details text NOT NULL,
+                                    details text,
                                     shared_tickets text,
                                     tags text
                                 );"""
@@ -88,47 +88,6 @@ def configure_tables(conn):
     create_table(conn, create_organizations)
     create_table(conn, create_users)
     create_table(conn, create_tickets)
-
-def initialize_organizations(conn):
-    with open("./inputdata/organizations.json") as json_file:
-      data = json.load(json_file)
-
-    sql = '''INSERT INTO organizations(_id,url,external_id,name,domain_names,created_at,details,shared_tickets,tags) VALUES(?,?,?,?,?,?,?,?,?)'''
-    for element in data:
-        valuelist = []
-        for iter_key, iter_value in element.items():
-            valuelist.append(str(iter_value))
-        with conn:
-            cur = conn.cursor()
-            cur.execute(sql, valuelist)
-
-    cur.execute("SELECT * FROM organizations;")
-    print(cur.fetchall())
-
-def initialize_tickets(conn):
-    with open("./inputdata/tickets.json") as json_file:
-      data = json.load(json_file)
-
-    
-    for element in data:
-        keylist = []
-        valuelist = []
-        valuelength = []
-        for iter_key, iter_value in element.items():
-            keylist.append(str(iter_key))
-            valuelist.append(str(iter_value))
-            valuelength += "?"
-        print (valuelength)
-
-        sql = f'''INSERT INTO tickets({(",".join(map(str, keylist)))}) VALUES({(",".join(map(str, valuelength)))})'''
-        print (sql)
-        with conn:
-            conn.set_trace_callback(print)
-            cur = conn.cursor()
-            cur.execute(sql, valuelist)
-
-    cur.execute("SELECT * FROM tickets;")
-    print(cur.fetchall())
 
 def initialize_table(conn, table):
     with open(f"./inputdata/{table}.json") as json_file:
@@ -143,7 +102,7 @@ def initialize_table(conn, table):
             keylist.append(str(iter_key))
             valuelist.append(str(iter_value))
             valuelength += "?"
-
+        ### SQL statements in python with dynamic values is a bit unfortunate.
         sql = f'''INSERT INTO {table}({(",".join(map(str, keylist)))}) VALUES({(",".join(map(str, valuelength)))})'''
         print (sql)
         with conn:
@@ -152,7 +111,9 @@ def initialize_table(conn, table):
             cur.execute(sql, valuelist)
 
 def main():
+    global conn 
     conn = create_connection()
+
     conn.set_trace_callback(print)
     configure_tables(conn)
     initialize_table(conn, "organizations")

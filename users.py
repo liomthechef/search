@@ -1,4 +1,6 @@
 import search
+import database
+import queries
 import pprint
 import json
 
@@ -25,17 +27,12 @@ def welcome():
 
 def startSearch(datasource):
     
-    if datasource  == "organizations":
-       searchkeys=search.searchableFields(search.organizations)
-    if datasource  == "users":
-       searchkeys=search.searchableFields(search.users)
-    if datasource  == "tickets":
-       searchkeys=search.searchableFields(search.tickets)
-    
+    searchkeys = queries.query_columns(datasource)
+
     response = False
     while response == False:
         print (f"\nSearchable fields in {datasource}")
-        print (json.dumps(list(searchkeys), indent=2, sort_keys=True))
+        print (searchkeys)
         print ("\n")
         print ("please type in a valid search key and press enter to begin, or type q to exit")
         k = input()
@@ -46,17 +43,13 @@ def startSearch(datasource):
         if v == "q":
             leave()
         if k not in searchkeys:
-            print ("please type in a valid key and press enter to begin, type quit to exit")
+            print ("invalid key  - please type in a valid key and press enter to begin, type quit to exit")
             response == False
         else:
             response == True
             v = normalizeString(v)
-            if datasource  == "organizations":
-               search.orgSearch(k, v, datasource)
-            if datasource  == "users":
-               search.userSearch(k, v, datasource)              
-            if datasource  == "tickets":
-               search.ticketSearch(k, v, datasource)             
+            # queries.search_columns(k, v, datasource)
+            queries.search_id(k, v, datasource)
             welcome()
 
 ### This isn't great but the python input parses user input as a string, breaking the comparison later
@@ -68,7 +61,7 @@ def normalizeString(v):
     except ValueError:
         value = v
     if v.casefold() ==  "true" or v.casefold() == "false":
-        value = bool(v)
+        value = str(v.casefold())
     return value
 
 ### It's important to be polite  
@@ -77,5 +70,5 @@ def leave():
     exit()
 
 if __name__ == "__main__":
-    search.main()
+    queries.main()
     welcome()
